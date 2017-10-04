@@ -1,4 +1,5 @@
 def is_palindrome(s):
+    s = s.lower()
     l1 = s.split()
     l2 = ''.join(l1)
     s2 = list(l2)
@@ -13,7 +14,7 @@ def is_palindrome(s):
             print(False)
             break
     i = i + 1
-s = 'я бы изменил мир, но бог не дает исходникя'
+s = 'Я бы изменил мир, но бог не дает исходникя'
 print(is_palindrome(s))
-s = 'сел в озере березов лес'
+s = 'Сел в озере березов лес'
 print(is_palindrome(s))
