@@ -14,7 +14,7 @@ def is_palindrome(s):
             print(False)
             break
     i = i + 1
-s = 'Я бы изменил мир, но бог не дает исходникя'
+s = 'Я бы изменил мир, но бог не дает исходники'
 print(is_palindrome(s))
 s = 'Сел в озере березов лес'
 print(is_palindrome(s))
