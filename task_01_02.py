@@ -1,5 +1,5 @@
-t = int(input('Кол-во тарелок '))
-m = float(input('Кол-во моющего средства '))
+t = int(input())
+m = float(input())
 m1 = 0.0
 t1 = 0
 while m1 <= m:
