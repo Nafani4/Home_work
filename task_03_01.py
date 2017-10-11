@@ -1,5 +1,5 @@
 from datetime import datetime
-
+from datetime import date
 def get_days_to_new_year():
     day_now = datetime.today()
     new_year = day_now.year+1
