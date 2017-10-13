@@ -46,26 +46,32 @@ def initialize(conn, creation_schema):
 
 
 def add_task(conn, task):
+    pass
     #Добавляет новую задачу в базу
 
 
 def add_modified_task(conn, task):
+    pass
     #Изменяет задачу и обновляет её в базе
 
 
 def add_repeat_task(conn, task_name):
+    pass
     #Возвращает задачу по названию и начинает её заново.
 
 
 def print_tasks(conn):
+    pass
     #Возвращает все задачи из базы
 
 
-def print_active_tasks(conn, status)
+def print_active_tasks(conn, status):
+    pass
     #Возвращает все незавершённые задачи
 
 
 def show_id(conn, task_name):
+    pass
     #Возвращает номер задачи по названию
 
 

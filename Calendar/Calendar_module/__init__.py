@@ -13,8 +13,8 @@ def action_add_task():
     task_started_time = input('\nВведите время начала задачи в формате dd.mm.yyyy: ')
     task_ended_time = input('\nВведите время завершения задачи в формате dd.mm.yyyy: ')
 
-    if not task_name and task_started_time and task_ended_time:
-        return
+#    if not task_name and task_started_time and task_ended_time:
+#        return
 
     with get_connection as conn:
         task_name = storage.add_name(conn, task_name)
@@ -25,7 +25,18 @@ def action_add_task():
     with get_connection as conn:
         task_ended_time = storage.task_ended_time(conn, task_ended_time)
     print('Время окончания: {}'.format(task_ended_time))
-    
+
+
+def action_print_tasks():
+    """Вывести все задачи на экран"""
+    with get_connection() as conn:
+        rows = storage.print_tasks(conn)
+
+    template = '{row[id]} - {row[task_name]} - {row[task_status]}'
+
+    for row in rows:
+        print(template.format(row=row))
+
 
 def action_modified_task():
     print(show_tasks())
@@ -53,15 +64,16 @@ def main():
 
     with get_connection as conn:
         storage.initialize(conn, creation_schema)
+        
     actions = {
-    '1': action_print_tasks,
-    '2': action_add_task,
-    '3': action_modified_task,
-    '4': action_end_task,
-    '5': action_repeat_task,
-    'm': action_show_menu,
-    'q': action_exit
-    }
+        '1': action_print_tasks,
+        '2': action_add_task,
+        '3': action_modified_task,
+        '4': action_end_task,
+        '5': action_repeat_task,
+        'm': action_show_menu,
+        'q': action_exit
+        }
 
     action_show_menu()
 
