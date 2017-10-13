@@ -1,33 +1,36 @@
-n = int(input())
-m = int(input())
-with open('data.txt') as data:
-    str1 = ""
-    str2 = ""
-    str3 = ""
-    t = len(data.read())
-    data.seek(0)
-    for s1 in range(0, t):
-        s = data.read(1)
-        if s == ' ':
-            chislo = int(str1)
-            if chislo % n == 0:
-                str3 = str3 + str(chislo) + ' '
-            str2 = str2 + str(chislo ** m) + ' '
-            str1 = ""
-#        elif s == t:
-#            if chislo % n == 0:
-#                str3 = str3 + str(chislo)
-#            str2 = str2 + str(chislo ** m)
-        else:
-            str1 = str1 + s
-    s1 += s1
-    chislo = int(str1)
-    if chislo % n == 0:
-        str3 = str3 + str(chislo)
-    str2 = str2 + str(chislo ** m)
+def iz_2_v_10():
+    d = int(len(str1))
+    a = list(str1)
+    c = 0
+    for i in a:
+        i = int(i)
+        c = c + i*(2**(d-1))
+        d = d - 1
+    return c
+str1 = "1010011010"
+if (__name__=="__main__"):
+    print(iz_2_v_10(), '\n')
 
-with open('out-1.txt', 'w') as out_1:
-    out_1.write(str3)
 
-with open('out-2.txt', 'w') as out_2:
-    out_2.write(str2)
+def iz_10_v_2():
+    lst1 = []
+    a2 = int(a1)
+    d1 = a2 % 2
+    d2 = a2 // 2
+    lst1.append(str(d1))
+    while d2 > 0:
+        d1 = d2 % 2
+        d3 = str(d1)
+        lst1.append(str(d1))
+        d2 = d2 // 2
+    lst1.reverse()
+    str2 = ''.join(lst1)
+    return str2
+a1 = 22
+
+if (__name__=="__main__"):
+    print(iz_10_v_2())
+
+
+
+
