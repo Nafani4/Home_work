@@ -73,19 +73,3 @@ def main():
             action()
         else:
             print('Неизвестная команда')
-
-
-
-def action_find():
-    """Найти оригинальный URL-адрес"""
-    short_url = input('\nВведите короткий URL-адрес: ')
-
-    if short_url:
-        with get_connection() as conn:
-            row = storage.find_url_by_short(conn, short_url)
-
-        if row:
-            url = row.get('original_url')
-            print('Оригинальный URL-адрес: {}'.format(url))
-        else:
-            print('Короткий URL-адрес "{}" не существует!'.format(short_url))

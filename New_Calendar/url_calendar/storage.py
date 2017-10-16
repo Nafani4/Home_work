@@ -30,6 +30,7 @@ def dict_factory(cursor, row):
         d[col[0]] = row[idx]
     return d
 
+
 def connect(db_name=None):
     if db_name is None:
         db_name = ':memory:'
@@ -45,26 +46,11 @@ def initialize(conn, creation_schema):
         conn.executescript(f.read())
 
 
-
 def add_task(conn, task, domain=''):
     """сохраняет новую задачу"""
     with conn:
 
         cursor = conn.execute(SQL_INSERT_TASK, (task,))
-        
-
-def find_task_by_task(conn, task):
-
-    with conn:
-        cursor = conn.execute(SQL_SELECT_TASK_BY_TASK,
-                              (task,))
-        return cursor.fetchone()      
-
-
-def update_task(conn, task, pk):
-    """ обновить задачу"""
-    with conn:
-        conn.execute(SQL_UPDATE_TASK, (task, pk))
 
 
 def find_all_tasks(conn):
@@ -72,27 +58,3 @@ def find_all_tasks(conn):
     with conn:
         cursor = conn.execute(SQL_SELECT_ALL)
         return cursor.fetchall()
-
-
-def find_task_by_pk(conn, pk):
-    """Возвращает URL-адрес по первичному ключу"""
-    with conn:
-        cursor = conn.execute(SQL_SELECT_TASK_BY_PK, (pk,))
-        return cursor.fetchone()
-
-
-def find_url_by_short(conn, short_url):
-    """Возвращает URL-адрес по короткому URL-у"""
-    short_url = short_url.rsplit('/', 1).pop()
-    pk = inverse(short_url)
-    return find_url_by_pk(conn, pk)
-
-
-
-
-
-
-
-
-
-
