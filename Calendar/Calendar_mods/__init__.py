@@ -1,7 +1,7 @@
 import sys
 import os.path as Path
-
-import storage
+import datatime
+from calendar_mods import storage
 
 
 get_connection = lambda: storage.connect('storage.sqlite')
@@ -12,7 +12,7 @@ def action_add_task():
     task_name = input('\nВведите задачу: ')
     task_started_time = input('\nВведите время начала задачи в формате dd.mm.yyyy: ')
     task_ended_time = input('\nВведите время завершения задачи в формате dd.mm.yyyy: ')
-
+    task_created = datetime.today()
 #    if not task_name and task_started_time and task_ended_time:
 #        return
 
@@ -25,6 +25,10 @@ def action_add_task():
     with get_connection as conn:
         task_ended_time = storage.task_ended_time(conn, task_ended_time)
     print('Время окончания: {}'.format(task_ended_time))
+    with get_connection as conn:
+        task_created = storage.task_created(conn, task_created)
+    print('Файл создан: {}'.format(task_created))
+
 
 
 def action_print_tasks():
@@ -39,9 +43,9 @@ def action_print_tasks():
 
 
 def action_modified_task():
-    print(show_tasks())
-    input('\nВведите id задачи: ')
-
+   
+    with get_connection() as conn:
+        storage.add_modified_task(conn)
 
 
 def action_show_menu():
@@ -64,7 +68,7 @@ def main():
 
     with get_connection as conn:
         storage.initialize(conn, creation_schema)
-        
+
     actions = {
         '1': action_print_tasks,
         '2': action_add_task,
