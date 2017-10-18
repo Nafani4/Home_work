@@ -1,11 +1,16 @@
 
-a = int(input())
-if a > 0:
-    print(a)
-else:
+def get_quadrant_number(x, y):
     try:
-        raise ValueError
-    except:
+        if x == 0 or y == 0:
+            raise ValueError
+        elif x > 0:
+            return 1 if y > 0 else 4
+        elif x < 0:
+            return 2 if y > 0 else 3
+    except ValueError:
         print('ValueError')
-#except:
-#    print('privet')
+
+if __name__ == '__main__':
+    get_quadrant_number(0, 0)
+    get_quadrant_number(1, 0)
+    get_quadrant_number(-1, 1)
