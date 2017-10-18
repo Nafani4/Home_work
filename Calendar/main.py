@@ -1,3 +1,3 @@
-from calendar_module import main
+from calendar_modules import main
 
 main()
