@@ -12,7 +12,7 @@ def action_find_all_tasks():
         rows = storage.find_all_tasks(conn)
 
     template = '{row[id]} - {row[task]} - {row[status]} - {row[created]}'
-
+    print(rows)
     for row in rows:
         print(template.format(row=row))
 
