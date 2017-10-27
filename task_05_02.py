@@ -13,4 +13,3 @@ def get_quadrant_number(x, y):
 if __name__ == '__main__':
     get_quadrant_number(0, 0)
     get_quadrant_number(1, 2)
-    print(get_quadrant_number(-1, -1))
