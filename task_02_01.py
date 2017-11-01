@@ -1,6 +1,8 @@
 def is_palindrome(s):
+    not_valid_values = list(' !@#$%^&*_+:?><!"№;%:?*_+,.')
     s = str(s).lower()
-    s = list(filter(lambda x: x != ' ', s))
+    s = list(s)
+    s = list(filter(lambda x: x not in not_valid_values, s))
     if s != s[::-1]:
         return False
     return True

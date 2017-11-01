@@ -1,15 +1,9 @@
-from string import *
+from string import digits, ascii_letters
 
-def validate(value):
-    """Разбиваем на 2 части, которые проверяем отдельно"""
-    razbivka = value.split('@')
-    if len(razbivka) < 2 or razbivka[0] == '' or razbivka[-1] == '':
-        return False
-    domain = razbivka[1]
-    damain = domain.split('.')
-    if len(damain) < 2 or damain[0] == '' or damain[-1] == '':
-        return False
-    print(domain)
-    return True
-
-print(validate('in@fotecj-tv.tu'))
+valid_values = list(digits + ascii_letters)
+print(valid_values)
+e = '№8*9;6::5??0**5"9ggg;9$9@1&0AAAA'
+e = list(e)
+print(e)
+tel = list(filter(lambda x: x in valid_values, e))
+print(tel)
