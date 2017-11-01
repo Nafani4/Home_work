@@ -1,5 +1,10 @@
 from abc import *
 
+
+class ParamHandlerException(Exception):
+    pass
+
+
 class ParamHandler(metaclass=ABCMeta):
     types = {}
     def __init__(self, source):
@@ -33,10 +38,10 @@ class ParamHandler(metaclass=ABCMeta):
         ext = source.split('.')[-1]
         klass = cls.types.get(ext)
         print(klass)
-        # if klass is None:
-        #     raise ParamHandlerException(
-        #         'Type {} is not found'.format(ext)
-        #         )
+        if klass is None:
+            raise ParamHandlerException(
+                'Type {} is not found'.format(ext)
+                )
         return klass(source, *args, **kwargs)
 
 

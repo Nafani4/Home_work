@@ -1,12 +1,15 @@
-def is_palindrome(s):
-    s = str(s).lower()
-    s = list(filter(lambda x: x != ' ', s))
-    if s != s[::-1]:
+from string import *
+
+def validate(value):
+    """Разбиваем на 2 части, которые проверяем отдельно"""
+    razbivka = value.split('@')
+    if len(razbivka) < 2 or razbivka[0] == '' or razbivka[-1] == '':
         return False
+    domain = razbivka[1]
+    damain = domain.split('.')
+    if len(damain) < 2 or damain[0] == '' or damain[-1] == '':
+        return False
+    print(domain)
     return True
 
-
-if __name__ == '__main__':
-    print(is_palindrome(49094))
-    print(is_palindrome('Я бы изменил мир, но бог не дает исходники'))
-    print(is_palindrome('Сел в озере березов лес'))
+print(validate('in@fotecj-tv.tu'))
