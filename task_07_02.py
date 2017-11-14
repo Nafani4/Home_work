@@ -1,22 +1,16 @@
 import random
-from string import ascii_letters
-
-
-def print_gen(a):
-    print(''.join(next(a)))
-
+from string import ascii_letters, digits, punctuation
 
 def decorator(func):
     def wrapper(*args, **kwargs):
-        a = func(*args, **kwargs)
-        print_gen(a)
+        return (''.join(next(func(*args, **kwargs))))
     return wrapper
 
 
 @decorator
 def password_generator(x):
-    a = random.sample(ascii_letters, x)
-    yield a
+    password_range = (ascii_letters + digits + punctuation)
+    yield random.sample(password_range, x)
 
-
-password_generator(16)
+if __name__ == '__main__':
+    print(password_generator(16))

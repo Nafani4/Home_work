@@ -1,22 +1,10 @@
-def print_fibonacci(gen):
-    lst = []
-    for i in gen:
-        lst.append(i)
-    a = ' '.join([str(i) for i in lst])
-    print(a)
+def fibonacci (num):
+    x, y = 0, 1
+    for i in range(num):
+        x, y = y, x + y
+        yield x
 
-def decorator(func):
-    def wrapper(*arg,**kwargs):
-        gen = func(*arg,**kwargs)
-        print_fibonacci(gen)
-    return wrapper
-
-@decorator
-def fibonacci(x):
-    lst = [1, ]
-    for i in range(1, x):
-        i = lst[i-1]+lst[i-2]
-        lst.append(i)
-        yield i
-
-fibonacci(10)
+if __name__ == '__main__':
+    print(fibonacci(10))
+    for i in fibonacci(10):
+        print(i)

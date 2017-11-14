@@ -26,7 +26,7 @@ class Menu(object):
         self.menu[name] = klass
     def show_menu(self):
         for i in self.menu:
-            print(i, ' ', end='')
+            print(i,'', end='')
             self.menu[i]().show_name()
     def __iter__(self):
         self.iter = iter(self.menu)

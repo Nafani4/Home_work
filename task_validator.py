@@ -59,14 +59,14 @@ class DateTimeValidator(Validator):
                 continue
         return False
 
+Validator.add_type('email', EMailValidator)
+Validator.add_type('datetime', DateTimeValidator)
 
 if __name__ == '__main__':
-    Validator.add_type('email', EMailValidator)
     validator = Validator.get_instance('email')
     print(validator.validate('info@itmo-it.org'))
     print(validator.validate('unknown'))
 
-    Validator.add_type('datetime', DateTimeValidator)
     validator = Validator.get_instance('datetime')
     print(validator.validate('1.9.2017'))
     print(validator.validate('01/09/2017'))
