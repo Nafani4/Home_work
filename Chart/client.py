@@ -25,9 +25,18 @@ class Client(object):
     def close_conn(self):
         self.conn.close()
 
+class ConsoleClient(object):
+    def __init__(self, client_1):
+        self.client_1 = client_1
+    def input_data(self):
+        while 1:
+            my_massage = input()
+            self.client_1.send_data(my_massage)
+
 
 client_1 = Client('localhost', 40001, 1024)
 client_1.conn_to_server()
-client_1.send_data('sfsaf')
-print(client_1.receive_data())
+massager = ConsoleClient(client_1)
+massager.input_data()
+client_1.receive_data()
 client_1.close_conn()

@@ -1,4 +1,5 @@
 from socket import *
+from threading import Thread
 
 class Server(object):
     def __init__(self, HOST, PORT, BACKLOG, bytes_limit):
@@ -9,7 +10,7 @@ class Server(object):
 
     def start_server(self):
         self.conn = socket(AF_INET, SOCK_STREAM)
-        self.conn.setsockopt(SOL_SOCKET, SO_REUSEADDR, 1)
+        # self.conn.setsockopt(SOL_SOCKET, SO_REUSEADDR, 1)
         self.conn.bind((self.HOST, self.PORT))
         self.conn.listen(self.BACKLOG)
 
@@ -17,21 +18,47 @@ class Server(object):
         try:
             in_conn, addr = self.conn.accept()
             return (in_conn, addr)
-        finally:
+        except:
             print('Закрываем соединение')
             self.conn.close()
 
-    def echo(self, in_conn):
+    def incoming_data(self, in_conn):
         while 1:
-            data = in_conn.recv(self.bytes_limit)
-            print(data)
-            if not data:
-                break
-            in_conn.send(data)
+                data = in_conn.recv(self.bytes_limit)
+                return data
+
+    def print_data(self, data):
+        print(data)
+
+    def close_conn(self):
         self.conn.close()
-        in_conn.close()
+
+class CachDataThread(Thread):
+    def __init__(self, stream, server):
+        super(CachDataThread, self).__init__()
+        self.stream = stream
+        self.server = server
+    def run(self):
+        while 1:
+            print(self.server.incoming_data(self.stream))
+
+
+
+
 
 server_1 = Server('localhost', 40001, 20, 1024)
 server_1.start_server()
-opens = server_1.accept_conn()[0]
-server_1.echo(opens)
+data_stream = server_1.accept_conn()[0]
+data_stream_1 = server_1.accept_conn()[0]
+print('connection done')
+
+thread_1 = CachDataThread(data_stream, server_1)
+thread_1.start()
+thread_2 = CachDataThread(data_stream_1, server_1)
+thread_2.start()
+
+
+
+
+
+
