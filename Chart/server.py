@@ -24,8 +24,8 @@ class Server(object):
 
     def incoming_data(self, in_conn):
         while 1:
-                data = in_conn.recv(self.bytes_limit)
-                return data
+            data = (in_conn.recv(self.bytes_limit)).decode('utf-8')
+            return data
 
     def print_data(self, data):
         print(data)
@@ -33,29 +33,53 @@ class Server(object):
     def close_conn(self):
         self.conn.close()
 
-class CachDataThread(Thread):
-    def __init__(self, stream, server):
-        super(CachDataThread, self).__init__()
+class DataThread(Thread):
+    def __init__(self, stream, server, client_ip, remove_thread, send_msg):
+        super(DataThread, self).__init__()
         self.stream = stream
         self.server = server
+        self.client_ip = client_ip
+        self.remove_thread = remove_thread
+        self.send_msg = send_msg
     def run(self):
         while 1:
-            print(self.server.incoming_data(self.stream))
+            try:
+                msg = self.server.incoming_data(self.stream).encode('utf-8')
+                self.send_msg(msg)
+            except:
+                print('Клиет {} вышел из чата'.format(self.client_ip))
+                self.remove_thread(self)
+                break
+    def close_thread(self):
+        self.stream.close()
 
+    def send_data(self, msg):
+        self.stream.send(msg)
 
-
+class ConnThread(Thread):
+    def __init__(self, server):
+        super(ConnThread, self).__init__()
+        self.server = server
+        self.conn_list = []
+    def run(self):
+        while 1:
+            (a, b) = self.server.accept_conn()
+            in_thread = DataThread(a, self.server, b, self.remove_thread, self.send_msg)
+            self.conn_list.append(in_thread)
+            in_thread.start()
+    def remove_thread(self, disconnected_thread):
+        disconnected_thread.close_thread()
+        self.conn_list.remove(disconnected_thread)
+    def send_msg(self, msg):
+        for i in self.conn_list:
+            i.send_data(msg)
 
 
 server_1 = Server('localhost', 40001, 20, 1024)
 server_1.start_server()
-data_stream = server_1.accept_conn()[0]
-data_stream_1 = server_1.accept_conn()[0]
-print('connection done')
 
-thread_1 = CachDataThread(data_stream, server_1)
-thread_1.start()
-thread_2 = CachDataThread(data_stream_1, server_1)
-thread_2.start()
+incoming_thread = ConnThread(server_1).start()
+
 
 
 

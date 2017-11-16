@@ -1,4 +1,5 @@
 from socket import *
+from threading import Thread
 
 
 class Client(object):
@@ -12,7 +13,7 @@ class Client(object):
         self.conn.connect((self.HOST, self.PORT))
 
     def string_to_bytes(self, incoming_string):
-        bytes_string = bytes(incoming_string, 'utf-8')
+        bytes_string = incoming_string.encode('utf-8')
         return bytes_string
 
     def send_data(self, incoming_string):
@@ -25,18 +26,39 @@ class Client(object):
     def close_conn(self):
         self.conn.close()
 
-class ConsoleClient(object):
-    def __init__(self, client_1):
-        self.client_1 = client_1
-    def input_data(self):
+class DataThread(Thread):
+    def __init__(self, client):
+        super(DataThread, self).__init__()
+        self.client = client
+    def run(self):
+        while 1:
+            try:
+                msg = self.client.receive_data().decode('utf-8')
+                print(msg)
+            except:
+                print('Сервер разорвал соединение')
+                break
+
+class ConsoleThread(Thread):
+    def __init__(self, client):
+        super(ConsoleThread, self).__init__()
+        self.client = client
+    def run(self):
         while 1:
             my_massage = input()
-            self.client_1.send_data(my_massage)
+            self.client.send_data(my_massage)
+    def close_outpit(self):
+        self.client.close_conn()
 
+class ClientControl(object):
+    def __init__(self):
+        self.client = Client('localhost', 40001, 1024)
+        self.data_thread = DataThread(self.client)
+        self.console_thread = ConsoleThread(self.client)
+    def start_client(self):
+        self.client.conn_to_server()
+        self.data_thread.start()
+        self.console_thread.start()
 
-client_1 = Client('localhost', 40001, 1024)
-client_1.conn_to_server()
-massager = ConsoleClient(client_1)
-massager.input_data()
-client_1.receive_data()
-client_1.close_conn()
+client_control = ClientControl()
+client_control.start_client()
