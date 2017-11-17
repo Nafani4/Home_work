@@ -1,6 +1,7 @@
 from socket import *
 from threading import Thread
 
+
 class Server(object):
     def __init__(self, HOST, PORT, BACKLOG, bytes_limit):
         self.HOST = HOST
@@ -44,6 +45,12 @@ class DataThread(Thread):
     def run(self):
         while 1:
             try:
+                """Аутефикация пользователя"""
+                self.stream.send('Введите имя пользователя'.encode('utf-8'))
+                msg = self.server.incoming_data(self.stream)
+                self.stream.send('Введите пароль'.encode('utf-8'))
+                msg = self.server.incoming_data(self.stream)
+                """Приём собщений"""
                 msg = self.server.incoming_data(self.stream).encode('utf-8')
                 self.send_msg(msg)
             except:
@@ -67,6 +74,7 @@ class ConnThread(Thread):
             in_thread = DataThread(a, self.server, b, self.remove_thread, self.send_msg)
             self.conn_list.append(in_thread)
             in_thread.start()
+
     def remove_thread(self, disconnected_thread):
         disconnected_thread.close_thread()
         self.conn_list.remove(disconnected_thread)

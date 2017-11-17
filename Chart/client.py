@@ -1,6 +1,7 @@
 from socket import *
 from threading import Thread
-
+import sys
+import os
 
 class Client(object):
     def __init__(self, HOST, PORT, bytes_limit):
@@ -10,7 +11,11 @@ class Client(object):
 
     def conn_to_server(self):
         self.conn = socket(AF_INET, SOCK_STREAM)
-        self.conn.connect((self.HOST, self.PORT))
+        try:
+            self.conn.connect((self.HOST, self.PORT))
+        except:
+            print('Сервер не доступен, попробуйте позже')
+            sys.exit(0)
 
     def string_to_bytes(self, incoming_string):
         bytes_string = incoming_string.encode('utf-8')
@@ -37,7 +42,7 @@ class DataThread(Thread):
                 print(msg)
             except:
                 print('Сервер разорвал соединение')
-                break
+                os._exit(0)
 
 class ConsoleThread(Thread):
     def __init__(self, client):
