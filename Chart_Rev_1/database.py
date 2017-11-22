@@ -33,9 +33,8 @@ def read_pass_by_name(name):
 
 
 if __name__ == '__main__':
-    print(read_name_by_name('Tu'))
-    print(read_name_by_name('Tut'))
-    print(read_pass_by_name('123123ff'))
+    with db_session:
+        LoginBase.select().show()
 
 
 

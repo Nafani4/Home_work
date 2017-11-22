@@ -2,6 +2,9 @@ from socket import *
 from threading import Thread
 import sys
 import database
+import validators
+import protocol_pb2
+
 
 
 class Server(object):
@@ -51,9 +54,12 @@ class DataThread(Thread):
         while 1:
             """Приём собщений"""
             try:
-                msg = incoming_data(self.stream)
-                for client_name in self.connected_clients.dict:
-                    self.connected_clients.dict[client_name].send_data(msg)
+                incoming_thread = protocol_pb2.Message()
+                incoming_thread.ParseFromString(incoming_data(self.stream))
+                client_name = incoming_thread.client_name
+                msg = incoming_thread.msg
+                for name in self.connected_clients.dict:
+                    self.connected_clients.dict[name].send_data(msg)
             except:
                 print('Клиет {} вышел из чата'.format(self.client_ip))
                 self.connected_clients.remove_from_online_users(self.client_name)
@@ -89,23 +95,29 @@ class Authorization(Thread):
                 send_msg(self.stream,
                          'Существующий пользователь - введите 1. Если хотите зарегистрироваться - введите 0'
                 )
-                msg = incoming_data(self.stream)
+                incoming_thread = protocol_pb2.Message()
+                incoming_thread.ParseFromString(incoming_data(self.stream))
+                msg = incoming_thread.msg
                 if msg != '1' and msg != '0':
-                    send_msg(self.stream,'ВВедите либо 0 либо 1')
+                    send_msg(self.stream,'Введите либо 0 либо 1')
                     count += 1
                     continue
                 if msg == '1':
                     send_msg(self.stream, 'Введите имя пользователя')
-                    client_name = incoming_data(self.stream)
+                    incoming_thread.ParseFromString(incoming_data(self.stream))
+                    client_name = incoming_thread.client_name
                     if client_name != database.read_name_by_name(client_name):
-                        send_msg(self.stream, 'Имя пользователя не существует, попробуйте снова')
                         count += 1
+                        send_msg(self.stream, 'Имя пользователя не существует, попробуйте снова.'
+                                              'Осталось {} попыток'.format(maxcount - count))
                         continue
                     send_msg(self.stream, 'Введите пароль')
-                    msg = incoming_data(self.stream)
+                    incoming_thread.ParseFromString(incoming_data(self.stream))
+                    msg = incoming_thread.msg
                     if msg != database.read_pass_by_name(msg):
-                        send_msg(self.stream, 'Пароль введён неверно, попробуйте снова')
                         count += 1
+                        send_msg(self.stream, 'Пароль введён неверно, попробуйте снова. '
+                                              'Осталось {} попыток'.format(maxcount - count))
                         continue
                     """Создать поток для общения"""
                     data_tread = DataThread(self.stream, self.client_ip, self.connected_clients, client_name)
@@ -113,17 +125,20 @@ class Authorization(Thread):
                     data_tread.start()
                     break
                 if msg == '0':
-                    send_msg(self.stream, 'Введите имя пользователя')
+                    send_msg(self.stream, 'Введите имя пользователя. Только латинские буквы и цифры')
                     client_name = incoming_data(self.stream)
-                    if not client_name:
+                    if not client_name or validators.name_validator(client_name) == False:
                         count += 1
+                        send_msg(self.stream, 'Неверный ввод, осталось {} попыток'.format(maxcount - count))
                         continue
                     send_msg(self.stream, 'Введите пароль')
                     clent_pass = incoming_data(self.stream)
-                    if not clent_pass:
+                    if not clent_pass or validators.name_validator(client_name) == False:
                         count += 1
+                        send_msg(self.stream, 'Неверный ввод, осталось {} попыток'.format(maxcount - count))
                         continue
-                    send_msg(self.stream, 'Пользователь {} добавлен, пройдите авторизацию'.format(client_name))
+                    send_msg(self.stream, 'Пользователь {} добавлен, пройдите '
+                                          'авторизацию для существующего пользователя'.format(client_name))
                     database.add_to_base(client_name, clent_pass)
                     count = 0
 
@@ -134,13 +149,12 @@ class Authorization(Thread):
 
 
 def incoming_data(in_conn, bytes_limit=3000):
-        data = (in_conn.recv(bytes_limit)).decode('utf-8')
+        data = (in_conn.recv(bytes_limit))
         return data
 
 
 def send_msg(in_conn, msg):
     in_conn.send(msg.encode('utf-8'))
-
 
 
 server_1 = Server('localhost', 40001, 20)
