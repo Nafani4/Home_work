@@ -1,5 +1,7 @@
 from socket import *
 from threading import Thread
+import sys
+import database
 
 
 class Server(object):
@@ -43,14 +45,24 @@ class DataThread(Thread):
         self.remove_thread = remove_thread
         self.send_msg = send_msg
     def run(self):
+        # while 1:
+        #         """Аутефикация пользователя"""
+        #         self.stream.send('Существующий пользователь - введите 1. Если хотите зарегистрироваться - введите 0'.encode('utf-8'))
+        #         msg = self.server.incoming_data(self.stream)
+        #         if msg == '1':
+        #             self.stream.send('Введите имя пользователя'.encode('utf-8'))
+        #             msg = self.server.incoming_data(self.stream)
+        #             if msg != database.read_name_by_name(msg):
+        #                 self.stream.send('Имя пользователя не существует, попробуйте снова'.encode('utf-8'))
+        #                 break
+        #             self.stream.send('Введите пароль'.encode('utf-8'))
+        #             msg = self.server.incoming_data(self.stream)
+        #             if msg != database.read_pass_by_name(msg):
+        #                 self.stream.send('Пароль введён неверно, попробуйте снова'.encode('utf-8'))
+        #                 break
         while 1:
+            """Приём собщений"""
             try:
-                """Аутефикация пользователя"""
-                self.stream.send('Введите имя пользователя'.encode('utf-8'))
-                msg = self.server.incoming_data(self.stream)
-                self.stream.send('Введите пароль'.encode('utf-8'))
-                msg = self.server.incoming_data(self.stream)
-                """Приём собщений"""
                 msg = self.server.incoming_data(self.stream).encode('utf-8')
                 self.send_msg(msg)
             except:
@@ -70,8 +82,8 @@ class ConnThread(Thread):
         self.conn_list = []
     def run(self):
         while 1:
-            (a, b) = self.server.accept_conn()
-            in_thread = DataThread(a, self.server, b, self.remove_thread, self.send_msg)
+            (stream, client_ip) = self.server.accept_conn()
+            in_thread = DataThread(stream, self.server, client_ip, self.remove_thread, self.send_msg)
             self.conn_list.append(in_thread)
             in_thread.start()
 
