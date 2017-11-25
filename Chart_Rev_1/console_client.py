@@ -10,6 +10,9 @@ class ConsoleIncomingThread(IncomingThread):
     def client_update_status(self, client_update_status):
         print(client_update_status)
 
+    def update_chart_list(self, clients_list):
+        print(clients_list)
+
 
 class ConsoleClientControl(object):
     """Данный класс обеспечивает старт всех необходимых для подключения к серверу методов других классов.

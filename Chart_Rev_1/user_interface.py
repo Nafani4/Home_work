@@ -1,18 +1,22 @@
 from PyQt5.QtWidgets import QLabel, QWidget, QHBoxLayout, QVBoxLayout, QPushButton, QLineEdit, QTextEdit, QListView, QApplication, QListWidget
 from PyQt5.QtGui import QStandardItem, QStandardItemModel
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, pyqtSignal, pyqtSlot
 import sys
 import os
 from ui_client import UiClientControl
 
 class MainWindow(QWidget):
-    def __init__(self):
+
+    # singal_chart_list_update = pyqtSignal(list)
+    # signal_client_status_change = pyqtSignal(str)
+    # signal_incoming_msg = pyqtSignal(str)
+
+    def __init__(self, client):
         super().__init__()
 
+        self.client = client
         self.initUI()
 
-    def set_client(self, client):
-        self.client = client
 
     # def initUI_list(self):
 
@@ -67,7 +71,13 @@ class MainWindow(QWidget):
         self.setGeometry(300, 300, 300, 100)
         self.show()
 
+        self.client.signals.singal_chart_list_update.connect(self.update_chart_status)
+        self.client.signals.signal_client_status_change.connect(self.print_new_client_status)
+        self.client.signals.signal_incoming_msg.connect(self.print_msg)
+
     def update_chart_status(self, clients_list):
+        # clients_list = clients_list.split(';')
+        # print(clients_list)
         self.chart_clients.clear()
         for i in clients_list:
             self.chart_clients.addItem(i)
@@ -75,7 +85,7 @@ class MainWindow(QWidget):
 
 
     # def update_chart_status(self, clients_list):
-    #     clients_list = QStandardItem(clients_list)
+    #     clients_list = QStandardIddtem(clients_list)
     #     self.model_chart_status.appendRow(clients_list)
     #     self.client_update_status.setModel(self.model_chart_status)
 
@@ -85,6 +95,8 @@ class MainWindow(QWidget):
         self.client_update_status.setModel(self.model_client_status)
         self.client_update_status.repaint()
 
+
+    # @pyqtSlot(str, name='signal_incoming_msg')
     def print_msg(self, msg):
         msg = QStandardItem(msg)
         self.model_chart_list.appendRow(msg)
@@ -103,11 +115,11 @@ class MainWindow(QWidget):
             self.on_clicked()
 
 
+
 if __name__ == '__main__':
     app =  QApplication(sys.argv)
-    main_win = MainWindow()
-    ui_client = UiClientControl(main_win)
-    main_win.set_client(ui_client)
+    ui_client = UiClientControl()
+    main_win = MainWindow(ui_client)
     ui_client.start_client()
     os._exit(app.exec_())
 

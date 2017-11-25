@@ -3,6 +3,9 @@ from threading import Thread
 import database #Импортируем модуль, отвечающий за соединение с базой данных имён и паролей
 import validators #Подключаем модуль, где описаны механизмы валидации имён и паролей
 import protocol_pb2 #Подключаем модуль для серелизации/десерелизации нашего сообщения
+import struct #Штука в котороя нихера не понимаю
+from google.protobuf.internal import decoder
+import time
 
 
 class Server(object):
@@ -85,6 +88,11 @@ class ConnectedClients(object):
     def string_of_online_clients(self):
         string_of_of_line_clients = 'spisok2017:::' + ';'.join(self.connected_clients.keys())
         return string_of_of_line_clients
+    def find_by_name(self, client_name):
+        for i in self.connected_clients:
+            if client_name == i:
+                return True
+        return False
     @property
     def dict(self):
         return self.connected_clients
@@ -119,9 +127,10 @@ class Authorization(Thread):
                     incoming_thread = protocol_pb2.Message()
                     incoming_thread.ParseFromString(incoming_data(self.stream))
                     client_name = incoming_thread.msg
-                    if client_name != database.read_name_by_name(client_name):
+                    if client_name != database.read_name_by_name(client_name) or self.connected_clients.find_by_name(client_name):
                         count += 1
-                        send_msg(self.stream, 'Имя пользователя не существует, попробуйте снова.'
+                        send_msg(self.stream, 'Имя пользователя не существует или пользователь онлайн,'
+                                              ' попробуйте снова.'
                                               'Осталось {} попыток'.format(maxcount - count))
                         continue
                     send_msg(self.stream, 'Введите пароль')
@@ -137,12 +146,11 @@ class Authorization(Thread):
                     send_msg(self.stream, 'Добро пожаловать в общий чат')
                     data_thread = DataThread(self.stream, self.client_ip, self.connected_clients, client_name)
                     self.connected_clients.add_online_clients(client_name, data_thread)
-                    # self.connected_clients.string_of_online_clients()
                     for name in self.connected_clients.dict:
                         self.connected_clients.dict[name].send_data(self.connected_clients.string_of_online_clients())
+                    for name in self.connected_clients.dict:
                         self.connected_clients.dict[name].send_data('polzovatel2017:::Пользователь {} '
                                                                     'присоединился к чату'.format(client_name))
-                    # send_msg(self.stream, self.connected_clients.string_of_online_clients())
                     data_thread.start()
                     break
                 """Аутефикация нового пользователя"""
@@ -180,15 +188,19 @@ class Authorization(Thread):
             print('Клиет {} вышел из чата'.format(self.client_ip))
 
 
-def incoming_data(in_conn, bytes_limit=3000):
-        data = (in_conn.recv(bytes_limit))
-        return data
+def incoming_data(in_conn, bytes_limit=10000):
+    len_buf = in_conn.recv(4)
+    msg_len = struct.unpack('>L', len_buf)[0]
+    data = in_conn.recv(msg_len)
+
+    return data
 
 def send_msg(in_conn, msg):
     message = protocol_pb2.Message()
     message.msg = msg
-    in_conn.send(message.SerializeToString())
-
+    message = message.SerializeToString()
+    packed_len = struct.pack('>L', len(message))
+    in_conn.send(packed_len + message)
 
 server_1 = Server('localhost', 40001, 20)
 server_1.start_server()

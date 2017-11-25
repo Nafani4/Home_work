@@ -3,6 +3,8 @@ from threading import Thread
 import sys
 import os
 import protocol_pb2 #подключаем модуль для серелизации/десерелизации нашего сообщения
+from google.protobuf.internal import decoder
+import struct
 
 
 class Client(object):
@@ -33,10 +35,14 @@ class Client(object):
     #     return bytes_string
 
     def send_data(self, incoming_string):
-        self.conn.send(incoming_string)
+        packed_len = struct.pack('>L', len(incoming_string))
+        self.conn.send(packed_len + incoming_string)
 
     def receive_data(self):
-        data = self.conn.recv(self.bytes_limit)
+        len_buf = self.conn.recv(4)
+        msg_len = struct.unpack('>L', len_buf)[0]
+        data = self.conn.recv(msg_len)
+
         return data
 
     def close_conn(self):
@@ -53,14 +59,15 @@ class IncomingThread(Thread):
         while 1:
             try:
                 incoming_thread = protocol_pb2.Message()
-                incoming_thread.ParseFromString(self.client.receive_data())
+                a = self.client.receive_data()
+                incoming_thread.ParseFromString(a)
                 msg = incoming_thread.msg
                 command_key = msg.split(':::')
                 if command_key[0] == 'polzovatel2017':
                     client_update_status = ' '.join(command_key[1:])
                     self.client_update_status(client_update_status)
                     continue
-                elif command_key[0] == 'spisok2017':
+                if command_key[0] == 'spisok2017':
                     # clients_list = ' '.join(command_key[1:])
                     clients_list = (command_key[1]).split(';')
                     self.update_chart_list(clients_list)
@@ -97,6 +104,7 @@ class OutputThread(Thread):
             if not my_message:
                 print('Введена пустая строка')
                 count += 1
+                continue
             message = protocol_pb2.Message()
             message.msg = my_message
             # message.client_name = self.client.client_name
