@@ -128,7 +128,7 @@ class Authorization(Thread):
                     incoming_thread = protocol_pb2.Message()
                     incoming_thread.ParseFromString(incoming_data(self.stream))
                     msg = incoming_thread.msg
-                    if msg != database.read_pass_by_name(msg):
+                    if msg != database.read_pass_by_name(client_name):
                         count += 1
                         send_msg(self.stream, 'Пароль введён неверно, попробуйте снова. '
                                               'Осталось {} попыток'.format(maxcount - count))

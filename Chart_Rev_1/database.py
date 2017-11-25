@@ -52,8 +52,8 @@ def read_pass_by_name(name):
 if __name__ == '__main__':
     with db_session:
         LoginBase.select().show()
-        # print(read_name_by_name('aa'))
-        # print(read_pass_by_name('aa'))
+        print(read_name_by_name('ss'))
+        print(read_pass_by_name('ss'))
         # Logs.select().show()
         # print(read_by_from_client('ss'))
 

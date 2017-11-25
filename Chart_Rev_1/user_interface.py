@@ -71,6 +71,7 @@ class MainWindow(QWidget):
         self.chart_clients.clear()
         for i in clients_list:
             self.chart_clients.addItem(i)
+        self.chart_clients.repaint()
 
 
     # def update_chart_status(self, clients_list):
@@ -82,6 +83,7 @@ class MainWindow(QWidget):
         client_update_status = QStandardItem(client_update_status)
         self.model_client_status.appendRow(client_update_status)
         self.client_update_status.setModel(self.model_client_status)
+        self.client_update_status.repaint()
 
     def print_msg(self, msg):
         msg = QStandardItem(msg)
