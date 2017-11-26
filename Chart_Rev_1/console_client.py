@@ -10,23 +10,23 @@ class ConsoleIncomingThread(IncomingThread):
     def client_update_status(self, client_update_status):
         print(client_update_status)
 
-    def update_chart_list(self, clients_list):
-        print(clients_list)
+    # def update_chart_list(self, clients_list):
+    #     print('Список участников чата {}'.format(clients_list))
 
 
 class ConsoleClientControl(object):
     """Данный класс обеспечивает старт всех необходимых для подключения к серверу методов других классов.
     Тут стартуем входящий и исходящий потоки"""
     def __init__(self):
-        self.client = Client('localhost', 40001, 3000)
-        self.data_thread = ConsoleIncomingThread(self.client)
-        self.console_thread = OutputThread(self.client)
+        self.__client = Client('localhost', 40001, 3000)
+        self.__data_thread = ConsoleIncomingThread(self.__client)
+        self.__console_thread = OutputThread(self.__client)
 
     def start_client(self):
-        self.client.ask_name()
-        self.client.conn_to_server()
-        self.data_thread.start()
-        self.console_thread.start()
+        self.__client.ask_name()
+        self.__client.conn_to_server()
+        self.__data_thread.start()
+        self.__console_thread.start()
 
 client_control = ConsoleClientControl()
 client_control.start_client()

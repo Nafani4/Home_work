@@ -1,2 +1,3 @@
-clients = 'fgeg'
-print(clients.split(';'))
+a = b'af'
+b=b'af'
+print(a+b)
